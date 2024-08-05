@@ -1,30 +1,16 @@
+
 $(document).ready(function(){
-    $.ajax({
-        url: '/main/sensor/',
-        type:'GET',
-        dataType:'json',
-        success:function(data){
-            if(data){
-                draw_heatmap(data);
-                draw_heatmap_ani(data); 
-            }
-            else{
-              alert("DATA CAN'T READ");
-            };
-        },
-        error:function(){
-            alert('ip dropdowns function is error, please modify ajax function!');
-        }
-    });
     $.ajax({
         url: '/main/id/',
         type:'GET',
         dataType:'json',
         success:function(data){
-            if(data){  
+            if(data)
+            {  
                 create_ip_list(data);
             }
-            else{
+            else
+            {
               alert("DATA CAN'T READ");
             };
         },
@@ -32,26 +18,31 @@ $(document).ready(function(){
             alert('function is error, please modify ajax function!');
         }
     });
+    // bar_graph();
+    // draw_heatmap();
+    // draw_heatmap_ani();
+    // draw_graph3D_static();
+    // draw_graph3D_ani();
+    // linear_graph();
+    draw_sequence();
 });
 
+$('#style').change(function(){
+    draw_graph3D_static();
+    draw_graph3D_ani();
+  });
+
+$('#apply').on('click',function(e){
+    // draw_heatmap();
+    // draw_heatmap_ani();
+    // draw_graph3D_static();
+    // draw_graph3D_ani();
+    draw_sequence();
+});
 
 $('#dropdowns').change(function(){
-    $.ajax({
-        url: '/main/sensor/',
-        type:'GET',
-        dataType:'json',
-        success:function(data){
-            if(data){
-                draw_heatmap(data);
-                draw_heatmap_ani(data);
-            }
-            else{
-              alert("DATA CAN'T READ");
-            };
-        },
-        error:function(){
-            alert('ip dropdowns change function is error, please modify ajax function!');
-        }
-    });
-    
+    // draw_heatmap();
+    // draw_heatmap_ani();
+    draw_sequence();
+    //input_ip();
 });

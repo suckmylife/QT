@@ -1,79 +1,45 @@
-var data = null;
-var graph = null;
-let dummy_int = []
-var zaxis_max = 100;
-
-//no upper function
-function unupper(str){
-  str = String(str);
-  return str.replace(/\"/gi,'');
-}
-
-$(document).ready(function(){
-  $.ajax({
-        url: '/main/sensor/',
-        type:'GET',
-        dataType:'json',
-        success:function(data){
-            if(data){
-              let str = JSON.stringify(data['data']['data']);
-              str = unupper(str);
-              dummy_int = str.split(',').map(function(item){
-                return parseInt(item,10)
-              });
-              drawVisualization(dummy_int);
-            }
-            else{
-              alert("DATA CAN'T READ");
-            };
-        },
-        error:function(){
-            alert('function is error, please modify ajax function!');
-        }
-    });
-});
-
-$('#style').change(function(){
-  $.ajax({
-        url: '/main/sensor/',
-        type:'GET',
-        dataType:'json',
-        success:function(data){
-            if(data){
-              let str = JSON.stringify(data['data']['data']);
-              str = unupper(str);
-              dummy_int = str.split(',').map(function(item){
-                return parseInt(item,10)
-              });
-              drawVisualization(dummy_int);
-            }
-            else{
-              alert("DATA CAN'T READ");
-            };
-        },
-        error:function(){
-            alert('function is error, please modify ajax function!');
-        }
-    });
-});
-
-function drawVisualization(dummy_int) {
+function draw_graph3D_static() {
+  var select_data = null;
+  var graph = null;
+  var zaxis_max = 50;
   var style = document.getElementById("style").value;
+  var withValue = ['bar-color', 'bar-size', 'dot-size', 'dot-color'].indexOf(style) != -1;
+
   // Create data
-  data = new vis.DataSet();
-    var i = 0;
-    for (var x=0; x<48; x++)
-    { 
-        for(var y=0; y<48; y++)
-        {
-        data.add({x: x, y: y, z: dummy_int[i]});
-        i = i+1;
+  select_data = new vis.DataSet();
+  var data = document.querySelectorAll('[id="select_ip_data"]');
+  var data_arr = [...data].map(input=>input.value);
+  var del = new Array();
+  var i = 0;
+  var cnt = $('#select_cnt').val();
+  var selected_ip = $('#select_ip').val();
+
+  for(var i =0; i<cnt; i++)
+  {
+      del[i] = data_arr[i].split(',').map(function(item){
+          return parseInt(item,10)
+          });
+  }
+ 
+  for (var x=0; x<48; x++)
+  { 
+      for(var y=0; y<48; y++)
+      {
+        if (withValue) {
+          var value = (y - x);
+          select_data.add({x: x, y: y, z: del[0][i],style:value });
+          i = i+1;
         }
-    }
+        else {
+          select_data.add({x: x, y: y, z: del[0][i]});
+          i = i+1;
+        }
+      }
+  }
 
   var options = {
-    width: "600px",
-    height: "600px",
+    width: "700px",
+    height: "700px",
     style: style,
     showPerspective: true,
     showGrid: true,
@@ -97,13 +63,17 @@ function drawVisualization(dummy_int) {
     },
     keepAspectRatio: true,
     verticalRatio: 0.5,
+    xLabel: "센서 1장의 입체 압력 분포도",
+    legendLabel: '압력',
+    showYAxis:false,
+    showXAxis:false
   };
 
   var camera = graph ? graph.getCameraPosition() : null;
 
   // create our graph
-  var container = document.getElementById("3Dgraph_static");
-  graph = new vis.Graph3d(container, data, options);
+  var container = document.getElementById("graph3D");
+  graph = new vis.Graph3d(container, select_data, options);
 
   if (camera) graph.setCameraPosition(camera); // restore camera position
 }

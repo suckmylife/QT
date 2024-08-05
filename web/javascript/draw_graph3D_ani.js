@@ -1,97 +1,72 @@
-var data = null;
-var graph = null;
-var parsing = [];
-var str_parsing = [];
-var int_parsing = [];
-var j = 0;
-var frameMax = 20;
+//no upper function
+function unupper(str){
+  str = String(str);
+  return str.replace(/\"/gi,'');
+}
 
-$(document).ready(function(){
-    $.ajax({
-          url: '/main/sensor1/',
-          type:'GET',
-          dataType:'json',
-          success:function(data){
-              if(data){
-                parsing = data['data'].forEach(function(d){
-                  str_parsing.push(d.data);
-                  return str_parsing
-                });
-                //str_parsing = JSON.stringify(parsing);
-                var str_container = JSON.stringify(str_parsing);
-                int_parsing = str_container.split(',').map(function(item){
-                  return parseInt(item,10)
-                });
-                drawVisualization1(int_parsing);
-              }
-              else{
-                alert("DATA CAN'T READ");
-              };
-          },
-          error:function(){
-              alert('function is error, please modify ajax function!');
-          }
-      });
-  });
-  $('#style').change(function(){
-    $.ajax({
-        url: '/main/sensor1/',
-        type:'GET',
-        dataType:'json',
-        success:function(data){
-            if(data){
-              parsing = data['data'].forEach(function(d){
-                str_parsing.push(d.data);
-                return str_parsing
-              });
-              //str_parsing = JSON.stringify(parsing);
-              var str_container = JSON.stringify(str_parsing);
-              int_parsing = str_container.split(',').map(function(item){
-                return parseInt(item,10)
-              });
-              drawVisualization1(int_parsing);
-            }
-            else{
-              alert("DATA CAN'T READ");
-            };
-        },
-        error:function(){
-            alert('function is error, please modify ajax function!');
-        }
-    });
-  });
+function draw_graph3D_ani(data) {
+  var graph = null;
+  var j = 0;
+  var cnt = 10;
+  var zaxis_max = 50;
+  
+  //data
+  var data = document.querySelectorAll('[id="select_ip_data"]');
+  var data_arr = [...data].map(input=>input.value);
+  var data_unupper = unupper(data_arr);
+  var data_comma = new Array();
+  data_comma = data_unupper.split(',').map(function(item){
+    return parseInt(item,10)
+});
 
-function drawVisualization1(parsing) {
   var style = document.getElementById("style").value;
-  data = new vis.DataSet();
-  var tMax = frameMax; //프레임 단위 
-  for (var t = 0; t < tMax; t++) {
+  var withValue = ['bar-color', 'bar-size', 'dot-size', 'dot-color'].indexOf(style) != -1;
+  select_data = new vis.DataSet();
+  for (var t = 0; t < cnt; t++) {
     for (var x = 0; x < 48; x++) {
       for (var y = 0; y < 48; y++) {
-        data.add([{ x: x, y: y, z: parsing[j], filter: t }]);
-        j = j+1;
-      
+        if (withValue) {
+          var value = (y - x);
+          select_data.add([{ x: x, y: y, z: data_comma[j], filter: t,style:value }]);
+          j = j+1;
+        }
+        else {
+          select_data.add([{ x: x, y: y, z: data_comma[j], filter: t }]);
+          j = j+1;
+        }
       }
     }
 }
 // specify options
 var options = {
-  width: "600px",
-  height: "600px",
+  width: "700px",
+  height: "700px",
   style: style,
   showPerspective: true,
   showGrid: true,
   showShadow: false,
-  // showAnimationControls: false,
-  keepAspectRatio: true,
+  keepAspectRatio: false,
   verticalRatio: 0.5,
-  animationInterval: 100, // milliseconds
+  animationInterval: 200, // milliseconds
   animationPreload: true,
   zMin:0,
   zMax:zaxis_max,
+  filterLabel: "프레임",
+  xLabel: "센서 1장의 입체 압력 분포도",
+  legendLabel: '압력',
+  tooltip: function (point) {
+    // parameter point contains properties x, y, z
+    return "z값: <b>" + point.z + "</b>"+ " x값: <b>" +point.x + "</b>"+ " y값: <b>" +point.y + "</b>";
+  },
+  xValueLabel: function (value) {
+    return value;
+  },
+  yValueLabel: function (value) {
+    return value;
+  }
 };
 
 // create our graph
-var container = document.getElementById("3Dgraph_ani");
-graph = new vis.Graph3d(container, data, options);
+var container = document.getElementById("graph3D_ani");
+graph = new vis.Graph3d(container, select_data, options);
 }
