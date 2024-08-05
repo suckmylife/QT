@@ -1,0 +1,55 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <link href="{% static 'css/style_3Dgraph.css' %}" rel="stylesheet" >
+    </head>
+        <p>
+          <label for="style">
+            압력 센서 데이터 3D그래프 선택:
+            <select id="style" onchange="drawVisualiztion()">
+              <option value="bar">bar</option>
+              <option value="dot">dot</option>
+              <option value="dot-line">dot-line</option>
+              <option value="grid" selected>grid</option>
+              <option value="line">line</option>
+              <option value="surface">surface</option>
+            </select>
+          </label>
+        </p>
+        <form method="post" id="data_filters" action="">
+          <label>From :</label>
+          <input type="text" id="from"><br>
+          <label>To :</label>
+          <input type="text" id="to">
+          <input type="submit" value="적용">
+      </form>
+      <div class="dropdown mb-4">
+        <form method="post" id="make_checkbox_select" action="">{% csrf_token %}
+            <select id="dropdowns" name="dropdowns"></select>
+            <input type="submit" value="Select">
+          </form>
+    </div>
+    <div id="3Dgraph_static"></div>
+    <div id="3Dgraph_ani">
+    <div style="position: relative; overflow: hidden; width: 600px; height: 600px; cursor: auto;">
+        <div style="position: absolute; bottom: 0px; left: 0px; width: 580px; padding: 10px;">
+          <div style="width: 100%; position: relative;"><input type="BUTTON" value="Prev">
+            <input type="BUTTON" value="Play">
+            <input type="BUTTON" value="Next">
+            <input type="BUTTON" style="position: absolute; border: 1px solid rgb(127, 127, 127); width: 432px; height: 6px; border-radius: 2px; background-color: rgb(229, 229, 229); top: 7.5px;">
+            <input type="BUTTON" value=" " style="margin: 0px; position: relative; left: 206px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'javascript/draw_graph3D_ani.js' %}"></script>
+  <script src="{% static 'javascript/graph_choices.js' %}"></script>
+  <script src="{% static 'javascript/draw_graph3D_static.js' %}"></script>
+  <script src="{% static 'javascript/dropdown_list.js' %}"></script>
+</html>
