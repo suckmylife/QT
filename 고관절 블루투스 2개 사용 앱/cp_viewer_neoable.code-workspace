@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "venv",
+			"path": "../venv"
+		},
+		{
+			"name": "cerebral-palsy-viewer",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
